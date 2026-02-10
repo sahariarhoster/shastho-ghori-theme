@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Heart, Eye, ShoppingCart, Minus, Plus, Send, User, Phone, MapPin } from "lucide-react";
+import { Heart, Eye, ShoppingCart, Minus, Plus, Send, User, Phone, MapPin, Truck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useToast } from "@/hooks/use-toast";
@@ -23,16 +23,20 @@ const ProductCard = ({ product }: { product: Product }) => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [shippingZone, setShippingZone] = useState<"inside_dhaka" | "outside_dhaka">("inside_dhaka");
 
+  const shippingCost = shippingZone === "inside_dhaka" ? 60 : 120;
   const handleOrder = () => {
     if (!name.trim() || !phone.trim() || !address.trim()) {
       toast({ title: "সকল তথ্য পূরণ করুন", variant: "destructive" });
       return;
     }
 
-    const total = product.price * quantity;
+    const subtotal = product.price * quantity;
+    const total = subtotal + shippingCost;
     const variantText = selectedVariant ? `\nসাইজ: ${selectedVariant}` : "";
-    const message = `🛒 *নতুন অর্ডার*\n\n📦 পণ্য: ${product.name} (${product.nameBn})${variantText}\n🔢 পরিমাণ: ${quantity}\n💰 মোট: ৳${total.toLocaleString()}\n\n👤 নাম: ${name}\n📞 ফোন: ${phone}\n📍 ঠিকানা: ${address}`;
+    const shippingText = shippingZone === "inside_dhaka" ? "ঢাকার ভিতরে (৳60)" : "ঢাকার বাইরে (৳120)";
+    const message = `🛒 *নতুন অর্ডার*\n\n📦 পণ্য: ${product.name} (${product.nameBn})${variantText}\n🔢 পরিমাণ: ${quantity}\n💰 সাবটোটাল: ৳${subtotal.toLocaleString()}\n🚚 ডেলিভারি: ${shippingText}\n💵 সর্বমোট: ৳${total.toLocaleString()}\n\n👤 নাম: ${name}\n📞 ফোন: ${phone}\n📍 ঠিকানা: ${address}`;
 
     const whatsappUrl = `https://wa.me/8801XXXXXXXXX?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
@@ -233,13 +237,50 @@ const ProductCard = ({ product }: { product: Product }) => {
             </div>
           </div>
 
+          {/* Shipping Zone */}
+          <div className="mt-4">
+            <p className="text-sm font-medium text-foreground mb-2 flex items-center gap-1.5">
+              <Truck className="w-4 h-4 text-primary" /> ডেলিভারি এলাকা
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              {([
+                { value: "inside_dhaka" as const, label: "ঢাকার ভিতরে", cost: "৳60" },
+                { value: "outside_dhaka" as const, label: "ঢাকার বাইরে", cost: "৳120" },
+              ]).map((zone) => (
+                <button
+                  key={zone.value}
+                  type="button"
+                  onClick={() => setShippingZone(zone.value)}
+                  className={`rounded-xl border-2 px-3 py-2.5 text-left transition-all ${
+                    shippingZone === zone.value
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-primary/30"
+                  }`}
+                >
+                  <span className="text-sm font-semibold text-foreground block">{zone.label}</span>
+                  <span className="text-xs text-muted-foreground">{zone.cost}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Total & Order */}
           <div className="mt-5 pt-4 border-t border-border">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm text-muted-foreground">মোট মূল্য</span>
-              <span className="text-xl font-bold text-price">
-                ৳ {(product.price * quantity).toLocaleString()}
-              </span>
+            <div className="space-y-2 mb-4">
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>সাবটোটাল</span>
+                <span>৳{(product.price * quantity).toLocaleString()}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>ডেলিভারি চার্জ</span>
+                <span>৳{shippingCost}</span>
+              </div>
+              <div className="flex items-center justify-between pt-2 border-t border-dashed border-border">
+                <span className="font-bold text-foreground">সর্বমোট</span>
+                <span className="text-xl font-bold text-price">
+                  ৳{(product.price * quantity + shippingCost).toLocaleString()}
+                </span>
+              </div>
             </div>
             <button
               onClick={handleOrder}
