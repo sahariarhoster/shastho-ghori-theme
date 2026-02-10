@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Minus, Plus, Trash2, ShoppingCart, Tag, CheckCircle2, Truck, Shield, ArrowRight } from "lucide-react";
+import {
+  Minus, Plus, Trash2, ShoppingCart, Tag, CheckCircle2, Truck,
+  Shield, ArrowRight, Gift, Sparkles, Package, Clock, ChevronRight
+} from "lucide-react";
 import TopBar from "@/components/TopBar";
 import Header from "@/components/Header";
 import Navigation from "@/components/Navigation";
@@ -28,6 +31,9 @@ const CartPage = () => {
       : activeCoupon.discount
     : 0;
   const finalTotal = Math.max(0, totalPrice - couponDiscount);
+  const totalItems = items.reduce((s, i) => s + i.quantity, 0);
+  const freeShippingThreshold = 1500;
+  const remainingForFreeShipping = Math.max(0, freeShippingThreshold - totalPrice);
 
   const handleApplyCoupon = () => {
     const code = couponCode.trim().toUpperCase();
@@ -52,54 +58,113 @@ const CartPage = () => {
       <Header />
       <Navigation />
       <main className="flex-1 pb-16 md:pb-0">
-        {/* Page Header */}
-        <div className="bg-secondary/40 border-b border-border">
-          <div className="container py-5">
-            <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground">
-              শপিং কার্ট
-            </h1>
-            {items.length > 0 && (
-              <p className="text-sm text-muted-foreground mt-1">
-                আপনার কার্টে {items.reduce((s, i) => s + i.quantity, 0)}টি পণ্য রয়েছে
-              </p>
-            )}
+        {/* Page Header with breadcrumb */}
+        <div className="bg-gradient-to-r from-primary/5 via-secondary/60 to-primary/5 border-b border-border">
+          <div className="container py-6">
+            <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-3">
+              <Link to="/" className="hover:text-primary transition-colors">হোম</Link>
+              <ChevronRight className="w-3 h-3" />
+              <span className="text-foreground font-medium">শপিং কার্ট</span>
+            </nav>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl gradient-primary flex items-center justify-center shadow-md shadow-primary/20">
+                <ShoppingCart className="w-6 h-6 text-primary-foreground" />
+              </div>
+              <div>
+                <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground">
+                  শপিং কার্ট
+                </h1>
+                {items.length > 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    {totalItems}টি পণ্য কার্টে আছে
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
         <div className="container py-8">
           {items.length === 0 ? (
-            <div className="text-center py-20 space-y-5">
-              <div className="w-24 h-24 mx-auto rounded-full bg-secondary/60 flex items-center justify-center">
-                <ShoppingCart className="w-12 h-12 text-muted-foreground" />
+            /* Empty State */
+            <div className="text-center py-20 max-w-md mx-auto space-y-6">
+              <div className="relative w-32 h-32 mx-auto">
+                <div className="absolute inset-0 rounded-full bg-secondary/60 animate-pulse" />
+                <div className="relative w-full h-full rounded-full bg-secondary/80 flex items-center justify-center">
+                  <ShoppingCart className="w-14 h-14 text-muted-foreground/60" />
+                </div>
               </div>
               <div>
-                <p className="text-xl font-heading font-semibold text-foreground">আপনার কার্ট খালি</p>
-                <p className="text-sm text-muted-foreground mt-1">আকর্ষণীয় পণ্য দেখতে শপিং শুরু করুন</p>
+                <p className="text-2xl font-heading font-bold text-foreground">কার্ট খালি!</p>
+                <p className="text-muted-foreground mt-2 leading-relaxed">
+                  আপনার কার্টে কোনো পণ্য নেই। আমাদের অর্গানিক পণ্যগুলো দেখুন এবং আপনার পছন্দের পণ্য যোগ করুন।
+                </p>
               </div>
               <Link
                 to="/"
-                className="inline-flex items-center gap-2 gradient-primary text-primary-foreground font-semibold px-8 py-3 rounded-xl hover:opacity-90 transition-opacity shadow-md"
+                className="inline-flex items-center gap-2 gradient-primary text-primary-foreground font-bold px-8 py-3.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20 text-base"
               >
                 শপিং শুরু করুন
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Cart Items */}
               <div className="lg:col-span-2 space-y-4">
-                {items.map((item) => (
+                {/* Free shipping progress */}
+                {remainingForFreeShipping > 0 ? (
+                  <div className="bg-star/10 border border-star/20 rounded-2xl p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Truck className="w-4 h-4 text-star" />
+                      <span className="text-sm font-semibold text-foreground">
+                        ফ্রি ডেলিভারি পেতে আর ৳{remainingForFreeShipping.toLocaleString()} অর্ডার করুন!
+                      </span>
+                    </div>
+                    <div className="w-full h-2.5 rounded-full bg-star/15 overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-star transition-all duration-500"
+                        style={{ width: `${Math.min(100, (totalPrice / freeShippingThreshold) * 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <Gift className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <span className="text-sm font-bold text-primary">🎉 অভিনন্দন!</span>
+                      <p className="text-xs text-muted-foreground">আপনি ফ্রি ডেলিভারির জন্য যোগ্য!</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Items header */}
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-foreground">
+                    কার্টের পণ্যসমূহ ({totalItems})
+                  </h3>
+                </div>
+
+                {/* Item Cards */}
+                {items.map((item, index) => (
                   <div
                     key={`${item.product.id}-${item.variant}`}
-                    className="bg-card border border-border rounded-xl p-4 flex gap-4 items-start hover:shadow-sm transition-shadow"
+                    className={`bg-card border border-border rounded-2xl p-5 flex gap-5 items-start hover:shadow-md transition-all duration-300 opacity-0 animate-fade-in stagger-${index + 1}`}
                   >
-                    {/* Image */}
-                    <Link to={`/product/${item.product.id}`} className="flex-shrink-0">
+                    {/* Image with badge */}
+                    <Link to={`/product/${item.product.id}`} className="flex-shrink-0 relative group">
                       <img
                         src={item.product.image}
                         alt={item.product.name}
-                        className="w-24 h-24 object-cover rounded-xl border border-border"
+                        className="w-28 h-28 object-cover rounded-2xl border border-border group-hover:shadow-md transition-shadow"
                       />
+                      {item.product.discount && item.product.discount > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-lg shadow">
+                          -{item.product.discount}%
+                        </span>
+                      )}
                     </Link>
 
                     {/* Details */}
@@ -108,53 +173,64 @@ const CartPage = () => {
                         <div>
                           <Link
                             to={`/product/${item.product.id}`}
-                            className="text-sm font-semibold text-foreground hover:text-primary transition-colors line-clamp-1"
+                            className="text-base font-semibold text-foreground hover:text-primary transition-colors line-clamp-1"
                           >
                             {item.product.name}
                           </Link>
-                          <p className="text-xs text-muted-foreground">{item.product.nameBn}</p>
-                          {item.variant && (
-                            <span className="inline-block mt-1 text-[10px] bg-primary/10 text-primary font-medium px-2 py-0.5 rounded-full">
-                              সাইজ: {item.variant}
+                          <p className="text-sm text-muted-foreground">{item.product.nameBn}</p>
+                          <div className="flex items-center gap-2 mt-1.5">
+                            {item.variant && (
+                              <span className="text-[11px] bg-primary/10 text-primary font-semibold px-2.5 py-0.5 rounded-full">
+                                {item.variant}
+                              </span>
+                            )}
+                            <span className="text-[11px] bg-secondary text-muted-foreground font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3 text-primary" /> স্টকে আছে
                             </span>
-                          )}
+                          </div>
                         </div>
                         <button
                           onClick={() => removeFromCart(item.product.id)}
-                          className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-all flex-shrink-0"
+                          className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl transition-all flex-shrink-0"
+                          title="সরিয়ে ফেলুন"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-4.5 h-4.5" />
                         </button>
                       </div>
 
-                      <div className="flex items-center justify-between mt-3">
+                      <div className="flex items-center justify-between mt-4">
                         {/* Quantity */}
-                        <div className="flex items-center border border-border rounded-xl overflow-hidden">
+                        <div className="flex items-center bg-secondary/50 rounded-xl overflow-hidden border border-border">
                           <button
                             onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                            className="p-2 text-foreground hover:bg-secondary transition-colors"
+                            className="p-2.5 text-foreground hover:bg-secondary transition-colors active:scale-95"
                           >
-                            <Minus className="w-3.5 h-3.5" />
+                            <Minus className="w-4 h-4" />
                           </button>
-                          <span className="px-4 text-sm font-bold text-foreground border-x border-border">
+                          <span className="px-5 text-sm font-bold text-foreground min-w-[3rem] text-center">
                             {item.quantity}
                           </span>
                           <button
                             onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                            className="p-2 text-foreground hover:bg-secondary transition-colors"
+                            className="p-2.5 text-foreground hover:bg-secondary transition-colors active:scale-95"
                           >
-                            <Plus className="w-3.5 h-3.5" />
+                            <Plus className="w-4 h-4" />
                           </button>
                         </div>
 
                         {/* Price */}
                         <div className="text-right">
-                          <span className="text-base font-bold text-price">
+                          <span className="text-lg font-bold text-price">
                             ৳ {(item.product.price * item.quantity).toLocaleString()}
                           </span>
                           {item.quantity > 1 && (
-                            <p className="text-[10px] text-muted-foreground">
+                            <p className="text-[11px] text-muted-foreground">
                               ৳ {item.product.price.toLocaleString()} × {item.quantity}
+                            </p>
+                          )}
+                          {item.product.originalPrice && item.product.discount && (
+                            <p className="text-[11px] text-primary font-medium">
+                              ৳ {((item.product.originalPrice - item.product.price) * item.quantity).toLocaleString()} সেভ
                             </p>
                           )}
                         </div>
@@ -166,101 +242,147 @@ const CartPage = () => {
                 {/* Continue Shopping */}
                 <Link
                   to="/"
-                  className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline font-medium mt-2"
+                  className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-semibold mt-3 group"
                 >
-                  ← আরও পণ্য দেখুন
+                  <ArrowRight className="w-4 h-4 rotate-180 group-hover:-translate-x-1 transition-transform" />
+                  আরও পণ্য দেখুন
                 </Link>
               </div>
 
               {/* Cart Summary Sidebar */}
               <div className="lg:col-span-1">
-                <div className="bg-card border border-border rounded-2xl p-6 space-y-5 sticky top-24 shadow-sm">
-                  <h3 className="text-lg font-heading font-bold text-foreground">অর্ডার সারাংশ</h3>
-
-                  {/* Coupon Code */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground flex items-center gap-1.5">
-                      <Tag className="w-3.5 h-3.5 text-primary" />
-                      কুপন কোড
-                    </label>
+                <div className="space-y-4 sticky top-24">
+                  {/* Coupon Card */}
+                  <div className="bg-card border border-border rounded-2xl p-5 shadow-sm">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Tag className="w-4 h-4 text-primary" />
+                      </div>
+                      <h3 className="text-sm font-bold text-foreground">কুপন কোড</h3>
+                    </div>
                     {appliedCoupon ? (
-                      <div className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-xl px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-primary" />
+                      <div className="flex items-center justify-between bg-primary/5 border-2 border-primary/20 rounded-xl px-4 py-3.5">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                            <Sparkles className="w-4 h-4 text-primary" />
+                          </div>
                           <div>
-                            <span className="text-sm font-bold text-primary">{appliedCoupon}</span>
-                            <span className="text-xs text-muted-foreground ml-1.5">({activeCoupon?.label})</span>
+                            <span className="text-sm font-bold text-primary block">{appliedCoupon}</span>
+                            <span className="text-[11px] text-muted-foreground">{activeCoupon?.label}</span>
                           </div>
                         </div>
                         <button
                           onClick={handleRemoveCoupon}
-                          className="text-xs text-destructive hover:underline font-medium"
+                          className="text-xs text-destructive hover:underline font-semibold bg-destructive/10 px-2.5 py-1 rounded-lg"
                         >
                           সরান
                         </button>
                       </div>
                     ) : (
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={couponCode}
-                          onChange={(e) => setCouponCode(e.target.value)}
-                          onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
-                          placeholder="কুপন কোড লিখুন"
-                          maxLength={20}
-                          className="flex-1 border border-border rounded-xl px-3 py-2.5 text-sm bg-background text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                        />
-                        <button
-                          onClick={handleApplyCoupon}
-                          className="bg-primary text-primary-foreground text-sm font-semibold px-4 rounded-xl hover:opacity-90 transition-opacity"
-                        >
-                          প্রয়োগ
-                        </button>
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={couponCode}
+                            onChange={(e) => setCouponCode(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+                            placeholder="কুপন কোড লিখুন"
+                            maxLength={20}
+                            className="flex-1 border-2 border-border rounded-xl px-3.5 py-2.5 text-sm bg-background text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                          />
+                          <button
+                            onClick={handleApplyCoupon}
+                            className="gradient-primary text-primary-foreground text-sm font-bold px-5 rounded-xl hover:opacity-90 transition-opacity shadow-sm"
+                          >
+                            প্রয়োগ
+                          </button>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground">
+                          ট্রাই করুন: SAVE10, FLAT100, WELCOME
+                        </p>
                       </div>
                     )}
                   </div>
 
-                  {/* Price Breakdown */}
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between text-muted-foreground">
-                      <span>সাবটোটাল ({items.reduce((s, i) => s + i.quantity, 0)} পণ্য)</span>
-                      <span>৳ {totalPrice.toLocaleString()}</span>
-                    </div>
-                    {couponDiscount > 0 && (
-                      <div className="flex justify-between text-primary font-medium">
-                        <span>কুপন ছাড়</span>
-                        <span>- ৳ {couponDiscount.toLocaleString()}</span>
+                  {/* Order Summary Card */}
+                  <div className="bg-card border border-border rounded-2xl p-5 shadow-sm">
+                    <h3 className="text-base font-heading font-bold text-foreground mb-4 flex items-center gap-2">
+                      <Package className="w-5 h-5 text-primary" />
+                      অর্ডার সারাংশ
+                    </h3>
+
+                    {/* Price Breakdown */}
+                    <div className="space-y-3 text-sm">
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>সাবটোটাল ({totalItems}টি পণ্য)</span>
+                        <span className="font-medium text-foreground">৳ {totalPrice.toLocaleString()}</span>
                       </div>
-                    )}
-                    <div className="flex justify-between text-muted-foreground">
-                      <span>ডেলিভারি চার্জ</span>
-                      <span className="text-xs">চেকআউটে নির্ধারণ হবে</span>
+                      {couponDiscount > 0 && (
+                        <div className="flex justify-between text-primary">
+                          <span className="flex items-center gap-1">
+                            <Tag className="w-3 h-3" /> কুপন ছাড়
+                          </span>
+                          <span className="font-bold">- ৳ {couponDiscount.toLocaleString()}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Truck className="w-3 h-3" /> ডেলিভারি
+                        </span>
+                        <span className="text-xs font-medium bg-secondary px-2 py-0.5 rounded-full">
+                          চেকআউটে
+                        </span>
+                      </div>
                     </div>
+
+                    <div className="border-t-2 border-dashed border-border my-4" />
+
+                    <div className="flex justify-between items-center mb-5">
+                      <span className="font-bold text-foreground text-base">সর্বমোট</span>
+                      <div className="text-right">
+                        <span className="text-2xl font-bold text-price">৳ {finalTotal.toLocaleString()}</span>
+                        {couponDiscount > 0 && (
+                          <p className="text-[11px] text-primary font-medium">
+                            ৳ {couponDiscount.toLocaleString()} সেভ হচ্ছে!
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <Link
+                      to="/checkout"
+                      className="block w-full gradient-primary text-primary-foreground font-bold py-4 rounded-xl hover:opacity-90 transition-opacity text-center shadow-lg shadow-primary/20 text-base animate-pulse-glow"
+                    >
+                      চেকআউট করুন →
+                    </Link>
+
+                    <Link
+                      to="/"
+                      className="block text-center text-sm text-muted-foreground hover:text-primary font-medium mt-3 transition-colors"
+                    >
+                      শপিং চালিয়ে যান
+                    </Link>
                   </div>
 
-                  <div className="border-t border-border pt-4 flex justify-between items-center">
-                    <span className="font-bold text-foreground text-base">সর্বমোট</span>
-                    <span className="text-2xl font-bold text-price">৳ {finalTotal.toLocaleString()}</span>
-                  </div>
-
-                  <Link
-                    to="/checkout"
-                    className="block w-full gradient-primary text-primary-foreground font-bold py-3.5 rounded-xl hover:opacity-90 transition-opacity text-center shadow-md text-base"
-                  >
-                    চেকআউট করুন
-                  </Link>
-
-                  {/* Trust Info */}
-                  <div className="space-y-2.5 pt-2">
-                    {[
-                      { icon: Shield, text: "১০০% নিরাপদ পেমেন্ট" },
-                      { icon: Truck, text: "সারাদেশে ক্যাশ অন ডেলিভারি" },
-                    ].map(({ icon: Icon, text }) => (
-                      <div key={text} className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Icon className="w-3.5 h-3.5 text-primary flex-shrink-0" />
-                        <span>{text}</span>
-                      </div>
-                    ))}
+                  {/* Trust Badges */}
+                  <div className="bg-card border border-border rounded-2xl p-4 shadow-sm">
+                    <div className="grid grid-cols-1 gap-3">
+                      {[
+                        { icon: Shield, text: "১০০% নিরাপদ অর্ডার", sub: "আপনার তথ্য সুরক্ষিত" },
+                        { icon: Truck, text: "সারাদেশে ক্যাশ অন ডেলিভারি", sub: "পণ্য পেয়ে পেমেন্ট" },
+                        { icon: Clock, text: "২-৫ কর্মদিবসে ডেলিভারি", sub: "দ্রুত ও নির্ভরযোগ্য" },
+                      ].map(({ icon: Icon, text, sub }) => (
+                        <div key={text} className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <Icon className="w-4 h-4 text-primary" />
+                          </div>
+                          <div>
+                            <span className="text-xs font-semibold text-foreground block">{text}</span>
+                            <span className="text-[10px] text-muted-foreground">{sub}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
