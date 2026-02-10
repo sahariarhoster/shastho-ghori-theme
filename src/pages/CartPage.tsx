@@ -364,26 +364,6 @@ const CartPage = () => {
                     </Link>
                   </div>
 
-                  {/* Trust Badges */}
-                  <div className="bg-card border border-border rounded-2xl p-4 shadow-sm">
-                    <div className="grid grid-cols-1 gap-3">
-                      {[
-                        { icon: Shield, text: "১০০% নিরাপদ অর্ডার", sub: "আপনার তথ্য সুরক্ষিত" },
-                        { icon: Truck, text: "সারাদেশে ক্যাশ অন ডেলিভারি", sub: "পণ্য পেয়ে পেমেন্ট" },
-                        { icon: Clock, text: "২-৫ কর্মদিবসে ডেলিভারি", sub: "দ্রুত ও নির্ভরযোগ্য" },
-                      ].map(({ icon: Icon, text, sub }) => (
-                        <div key={text} className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <Icon className="w-4 h-4 text-primary" />
-                          </div>
-                          <div>
-                            <span className="text-xs font-semibold text-foreground block">{text}</span>
-                            <span className="text-[10px] text-muted-foreground">{sub}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
