@@ -52,9 +52,9 @@ const ProductPage = () => {
       toast({ title: "দয়া করে সকল তথ্য পূরণ করুন", variant: "destructive" });
       return;
     }
-    toast({ title: "অর্ডার সফলভাবে সম্পন্ন হয়েছে! 🎉", description: "আমরা শীঘ্রই আপনার সাথে যোগাযোগ করবো।" });
     setShowQuickOrder(false);
     setQuickForm({ name: "", phone: "", address: "", notes: "" });
+    navigate("/thank-you");
   };
 
   return (
