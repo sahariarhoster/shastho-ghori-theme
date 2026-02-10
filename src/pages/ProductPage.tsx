@@ -174,12 +174,30 @@ const ProductPage = () => {
                 </button>
               </div>
 
+              {/* Delivery Info */}
+              <div className="pt-4 border-t border-border space-y-3">
+                <p className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <Truck className="w-4 h-4 text-primary" />
+                  ডেলিভারি চার্জ
+                </p>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between bg-secondary/50 rounded-md px-4 py-2.5">
+                    <span className="text-sm text-foreground">ঢাকার ভিতরে (Inside Dhaka)</span>
+                    <span className="text-sm font-bold text-price">৳ 60</span>
+                  </div>
+                  <div className="flex items-center justify-between bg-secondary/50 rounded-md px-4 py-2.5">
+                    <span className="text-sm text-foreground">ঢাকার বাইরে (Outside Dhaka)</span>
+                    <span className="text-sm font-bold text-price">৳ 120</span>
+                  </div>
+                </div>
+              </div>
+
               {/* Trust Badges */}
               <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
                 {[
-                  { icon: Truck, label: "Free Delivery", sub: "Orders over ৳1500" },
                   { icon: Shield, label: "100% Organic", sub: "Guaranteed quality" },
                   { icon: RotateCcw, label: "Easy Returns", sub: "7-day return policy" },
+                  { icon: Truck, label: "Cash on Delivery", sub: "Pay when you receive" },
                 ].map(({ icon: Icon, label, sub }) => (
                   <div key={label} className="flex flex-col items-center text-center gap-1">
                     <Icon className="w-5 h-5 text-primary" />
