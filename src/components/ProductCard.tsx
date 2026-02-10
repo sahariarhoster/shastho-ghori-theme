@@ -90,7 +90,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           </div>
 
           {/* Two Buttons */}
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2">
             <Link
               to={`/product/${product.id}`}
               className="flex-1 border border-primary text-primary text-sm font-semibold py-2.5 rounded-lg hover:bg-primary/5 transition-colors text-center"
