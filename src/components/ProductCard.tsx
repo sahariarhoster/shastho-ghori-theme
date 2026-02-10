@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Heart, Eye, ShoppingCart, Minus, Plus, X } from "lucide-react";
+import { Heart, Eye, ShoppingCart, Minus, Plus, Send, User, Phone, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useToast } from "@/hooks/use-toast";
@@ -20,12 +20,29 @@ const ProductCard = ({ product }: { product: Product }) => {
     product.variants?.[0]
   );
   const [quantity, setQuantity] = useState(1);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
 
   const handleOrder = () => {
-    addToCart(product, quantity, selectedVariant);
-    toast({ title: "কার্টে যোগ হয়েছে! 🛒", description: `${product.name} × ${quantity}` });
+    if (!name.trim() || !phone.trim() || !address.trim()) {
+      toast({ title: "সকল তথ্য পূরণ করুন", variant: "destructive" });
+      return;
+    }
+
+    const total = product.price * quantity;
+    const variantText = selectedVariant ? `\nসাইজ: ${selectedVariant}` : "";
+    const message = `🛒 *নতুন অর্ডার*\n\n📦 পণ্য: ${product.name} (${product.nameBn})${variantText}\n🔢 পরিমাণ: ${quantity}\n💰 মোট: ৳${total.toLocaleString()}\n\n👤 নাম: ${name}\n📞 ফোন: ${phone}\n📍 ঠিকানা: ${address}`;
+
+    const whatsappUrl = `https://wa.me/8801XXXXXXXXX?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank");
+
+    toast({ title: "অর্ডার পাঠানো হচ্ছে! ✅", description: product.name });
     setOrderOpen(false);
     setQuantity(1);
+    setName("");
+    setPhone("");
+    setAddress("");
   };
 
   return (
@@ -178,7 +195,45 @@ const ProductCard = ({ product }: { product: Product }) => {
             </div>
           </div>
 
-          {/* Total & Add to Cart */}
+          {/* Customer Info */}
+          <div className="mt-4 space-y-3">
+            <p className="text-sm font-medium text-foreground">আপনার তথ্য দিন</p>
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="আপনার নাম"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                maxLength={100}
+                className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
+              />
+            </div>
+            <div className="relative">
+              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                type="tel"
+                placeholder="মোবাইল নম্বর"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                maxLength={15}
+                className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
+              />
+            </div>
+            <div className="relative">
+              <MapPin className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+              <textarea
+                placeholder="সম্পূর্ণ ঠিকানা"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                maxLength={300}
+                rows={2}
+                className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors resize-none"
+              />
+            </div>
+          </div>
+
+          {/* Total & Order */}
           <div className="mt-5 pt-4 border-t border-border">
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm text-muted-foreground">মোট মূল্য</span>
@@ -190,8 +245,8 @@ const ProductCard = ({ product }: { product: Product }) => {
               onClick={handleOrder}
               className="w-full gradient-primary text-primary-foreground font-semibold py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-md"
             >
-              <ShoppingCart className="w-4 h-4" />
-              কার্টে যোগ করুন
+              <Send className="w-4 h-4" />
+              সরাসরি অর্ডার করুন
             </button>
           </div>
         </DialogContent>
