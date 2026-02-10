@@ -380,24 +380,6 @@ const CheckoutPage = () => {
                     অর্ডার কনফার্ম করুন →
                   </button>
                 </div>
-
-                {/* Trust Badges */}
-                <div className="bg-card border border-border rounded-2xl p-4 shadow-sm">
-                  <div className="grid grid-cols-1 gap-3">
-                    {[
-                      { icon: Shield, text: "১০০% নিরাপদ অর্ডার" },
-                      { icon: Truck, text: "ক্যাশ অন ডেলিভারি" },
-                      { icon: Clock, text: "দ্রুত ডেলিভারি" },
-                    ].map(({ icon: Icon, text }) => (
-                      <div key={text} className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <Icon className="w-3.5 h-3.5 text-primary" />
-                        </div>
-                        <span className="text-xs font-semibold text-foreground">{text}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
           </div>
