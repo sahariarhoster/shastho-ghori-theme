@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import catEnergy from "@/assets/cat-energy.jpg";
 import catHeart from "@/assets/cat-heart.jpg";
 import catHoney from "@/assets/cat-honey.jpg";
@@ -9,15 +10,15 @@ import catDates from "@/assets/cat-dates.jpg";
 import { LayoutGrid, Sparkles } from "lucide-react";
 
 const categories = [
-  { name: "Energy Booster", nameBn: "শক্তি বর্ধক", image: catEnergy, count: 12 },
-  { name: "Heart Care", nameBn: "হার্ট কেয়ার", image: catHeart, count: 8 },
-  { name: "Honey", nameBn: "মধু", image: catHoney, count: 15 },
-  { name: "Sleep Care", nameBn: "ঘুমের যত্ন", image: catSleep, count: 6 },
-  { name: "Brain Food", nameBn: "ব্রেইন ফুড", image: catBrain, count: 9 },
-  { name: "Herbs", nameBn: "ভেষজ", image: catHerbs, count: 20 },
-  { name: "Weight Loss", nameBn: "ওজন কমান", image: catWeightloss, count: 11 },
-  { name: "Dates", nameBn: "খেজুর", image: catDates, count: 7 },
-  { name: "All Categories", nameBn: "সকল ক্যাটাগরি", image: null, count: null },
+  { name: "Energy Booster", nameBn: "শক্তি বর্ধক", image: catEnergy, count: 12, slug: "energy-booster" },
+  { name: "Heart Care", nameBn: "হার্ট কেয়ার", image: catHeart, count: 8, slug: "heart-care" },
+  { name: "Honey", nameBn: "মধু", image: catHoney, count: 15, slug: "honey" },
+  { name: "Sleep Care", nameBn: "ঘুমের যত্ন", image: catSleep, count: 6, slug: "sleep-care" },
+  { name: "Brain Food", nameBn: "ব্রেইন ফুড", image: catBrain, count: 9, slug: "brain-food" },
+  { name: "Herbs", nameBn: "ভেষজ", image: catHerbs, count: 20, slug: "herbs" },
+  { name: "Weight Loss", nameBn: "ওজন কমান", image: catWeightloss, count: 11, slug: "weight-loss" },
+  { name: "Dates", nameBn: "খেজুর", image: catDates, count: 7, slug: "dates" },
+  { name: "All Categories", nameBn: "সকল ক্যাটাগরি", image: null, count: null, slug: "all" },
 ];
 
 const Categories = () => (
@@ -40,9 +41,9 @@ const Categories = () => (
       {/* Category Grid */}
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-9 gap-4 md:gap-6 justify-items-center">
         {categories.map((cat, i) => (
-          <a
+          <Link
             key={cat.name}
-            href="#"
+            to={`/category/${cat.slug}`}
             className={`flex flex-col items-center gap-2.5 group opacity-0 animate-scale-in stagger-${i + 1} w-full max-w-[120px]`}
           >
             {/* Image Circle */}
@@ -78,7 +79,7 @@ const Categories = () => (
                 {cat.name}
               </span>
             </div>
-          </a>
+          </Link>
         ))}
       </div>
     </div>
