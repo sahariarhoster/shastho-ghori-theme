@@ -28,17 +28,26 @@ const reviews = [
 ];
 
 const ReviewsSection = () => (
-  <section className="py-10 md:py-16">
-    <div className="container">
-      <h2 className="section-heading mb-10">Reviews</h2>
+  <section className="py-12 md:py-20 relative overflow-hidden">
+    {/* Subtle background pattern */}
+    <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, hsl(var(--primary)) 1px, transparent 0)", backgroundSize: "24px 24px" }} />
+
+    <div className="container relative">
+      <div className="text-center mb-12">
+        <span className="text-xs font-semibold text-accent uppercase tracking-widest">Testimonials</span>
+        <h2 className="section-heading mt-2">Reviews</h2>
+        <p className="text-sm text-muted-foreground mt-2">আমাদের সন্তুষ্ট গ্রাহকদের মতামত</p>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {reviews.map((review) => (
+        {reviews.map((review, i) => (
           <div
             key={review.id}
-            className="bg-card border border-border rounded-lg p-6 relative"
+            className={`glass-card rounded-xl p-6 relative hover-lift opacity-0 animate-fade-in-up stagger-${i + 1}`}
           >
-            <Quote className="w-8 h-8 text-primary/20 absolute top-4 right-4" />
-            <div className="flex gap-0.5 mb-3">
+            <div className="absolute -top-2 -right-2 w-10 h-10 gradient-primary rounded-full flex items-center justify-center shadow-lg">
+              <Quote className="w-4 h-4 text-primary-foreground" />
+            </div>
+            <div className="flex gap-0.5 mb-4">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
                   key={i}
@@ -50,12 +59,17 @@ const ReviewsSection = () => (
                 />
               ))}
             </div>
-            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-              {review.text}
+            <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+              "{review.text}"
             </p>
-            <p className="text-sm font-semibold text-foreground">
-              {review.name}
-            </p>
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
+                {review.name.charAt(0)}
+              </div>
+              <p className="text-sm font-semibold text-foreground">
+                {review.name}
+              </p>
+            </div>
           </div>
         ))}
       </div>
