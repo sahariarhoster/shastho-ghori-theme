@@ -8,7 +8,9 @@ import Footer from "@/components/Footer";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import ProductCard from "@/components/ProductCard";
 import { products } from "@/data/products";
+import { useCart } from "@/context/CartContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -16,6 +18,8 @@ const ProductPage = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useCart();
+  const { toast } = useToast();
 
   if (!product) {
     return (
@@ -162,9 +166,15 @@ const ProductPage = () => {
 
               {/* Actions */}
               <div className="flex gap-3">
-                <button className="flex-1 bg-primary text-primary-foreground font-semibold py-3.5 rounded-md hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                <button
+                  onClick={() => {
+                    addToCart(product, quantity, product.variants?.[selectedVariant]);
+                    toast({ title: "কার্টে যোগ হয়েছে! 🛒", description: `${product.name} × ${quantity}` });
+                  }}
+                  className="flex-1 bg-primary text-primary-foreground font-semibold py-3.5 rounded-md hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                >
                   <ShoppingCart className="w-5 h-5" />
-                  অর্ডার করুন
+                  কার্টে যোগ করুন
                 </button>
                 <button className="p-3.5 border border-border rounded-md text-foreground hover:text-primary hover:border-primary transition-colors">
                   <Heart className="w-5 h-5" />

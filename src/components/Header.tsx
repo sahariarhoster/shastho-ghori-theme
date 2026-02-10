@@ -1,18 +1,21 @@
 import { Search, ShoppingCart, Heart, User } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useCart } from "@/context/CartContext";
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const { totalItems, totalPrice } = useCart();
 
   return (
     <header className="bg-background border-b border-border sticky top-0 z-50">
       <div className="container flex items-center justify-between py-4 gap-4">
         {/* Logo */}
-        <a href="/" className="flex-shrink-0">
+        <Link to="/" className="flex-shrink-0">
           <h1 className="text-2xl md:text-3xl font-heading font-bold text-primary leading-tight">
             Shastho<br className="hidden md:block" /> Gori
           </h1>
-        </a>
+        </Link>
 
         {/* Search */}
         <div className="hidden md:flex flex-1 max-w-xl">
@@ -38,13 +41,13 @@ const Header = () => {
           <button className="hidden md:flex items-center gap-1 text-foreground hover:text-primary transition-colors">
             <User className="w-5 h-5" />
           </button>
-          <button className="relative flex items-center gap-1 text-foreground hover:text-primary transition-colors">
+          <Link to="/cart" className="relative flex items-center gap-1 text-foreground hover:text-primary transition-colors">
             <ShoppingCart className="w-5 h-5" />
             <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold">
-              0
+              {totalItems}
             </span>
-            <span className="hidden md:inline text-sm ml-1">৳ 0.00</span>
-          </button>
+            <span className="hidden md:inline text-sm ml-1">৳ {totalPrice.toLocaleString()}</span>
+          </Link>
         </div>
       </div>
     </header>
