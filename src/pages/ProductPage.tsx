@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { Heart, ShoppingCart, Share2, ChevronRight, Star, Minus, Plus, Truck, Shield, RotateCcw, Phone } from "lucide-react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { Heart, ShoppingCart, Share2, ChevronRight, Star, Minus, Plus, Truck, Shield, RotateCcw, Phone, X } from "lucide-react";
 import TopBar from "@/components/TopBar";
 import Header from "@/components/Header";
 import Navigation from "@/components/Navigation";
@@ -18,8 +18,13 @@ const ProductPage = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [showQuickOrder, setShowQuickOrder] = useState(false);
+  const [quickForm, setQuickForm] = useState({ name: "", phone: "", address: "", notes: "" });
+  const [shippingZone, setShippingZone] = useState<"inside_dhaka" | "outside_dhaka">("inside_dhaka");
+  const [paymentMethod, setPaymentMethod] = useState<"cod" | "bkash">("cod");
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   if (!product) {
     return (
@@ -38,6 +43,19 @@ const ProductPage = () => {
   const images = [product.image, product.image2 || product.image];
   const relatedProducts = products.filter((p) => p.id !== product.id).slice(0, 4);
   const hasDiscount = product.discount && product.discount > 0;
+  const shippingCost = shippingZone === "inside_dhaka" ? 60 : 120;
+  const orderTotal = product.price * quantity + shippingCost;
+
+  const handleQuickOrder = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quickForm.name || !quickForm.phone || !quickForm.address) {
+      toast({ title: "দয়া করে সকল তথ্য পূরণ করুন", variant: "destructive" });
+      return;
+    }
+    toast({ title: "অর্ডার সফলভাবে সম্পন্ন হয়েছে! 🎉", description: "আমরা শীঘ্রই আপনার সাথে যোগাযোগ করবো।" });
+    setShowQuickOrder(false);
+    setQuickForm({ name: "", phone: "", address: "", notes: "" });
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -184,6 +202,14 @@ const ProductPage = () => {
                 </button>
               </div>
 
+              {/* Quick Order Button */}
+              <button
+                onClick={() => setShowQuickOrder(true)}
+                className="w-full bg-destructive text-destructive-foreground font-semibold py-3.5 rounded-md hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+              >
+                সরাসরি অর্ডার করুন
+              </button>
+
               {/* WhatsApp & Call */}
               <div className="flex gap-3">
                 <a
@@ -318,6 +344,149 @@ const ProductPage = () => {
           </div>
         </section>
       </main>
+
+      {/* Quick Order Popup */}
+      {showQuickOrder && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-background rounded-lg w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl">
+            <div className="flex items-center justify-between p-5 border-b border-border">
+              <h2 className="text-lg font-heading font-bold text-foreground">সরাসরি অর্ডার করুন</h2>
+              <button onClick={() => setShowQuickOrder(false)} className="text-muted-foreground hover:text-foreground">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleQuickOrder} className="p-5 space-y-4">
+              {/* Product Summary */}
+              <div className="flex gap-3 items-center bg-secondary/30 rounded-md p-3">
+                <img src={product.image} alt={product.name} className="w-14 h-14 rounded-md object-cover border border-border" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground truncate">{product.name}</p>
+                  <p className="text-xs text-muted-foreground">{product.nameBn}</p>
+                  <p className="text-sm font-bold text-price mt-0.5">
+                    {quantity} × ৳ {product.price.toLocaleString()} = ৳ {(product.price * quantity).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+
+              {/* Name */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">নাম *</label>
+                <input
+                  value={quickForm.name}
+                  onChange={(e) => setQuickForm({ ...quickForm, name: e.target.value })}
+                  className="w-full border border-border rounded-md px-4 py-2.5 bg-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
+                  placeholder="আপনার নাম"
+                  required
+                />
+              </div>
+
+              {/* Phone */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">মোবাইল নম্বর *</label>
+                <input
+                  value={quickForm.phone}
+                  onChange={(e) => setQuickForm({ ...quickForm, phone: e.target.value })}
+                  className="w-full border border-border rounded-md px-4 py-2.5 bg-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
+                  placeholder="01XXXXXXXXX"
+                  required
+                />
+              </div>
+
+              {/* Address */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">ঠিকানা *</label>
+                <textarea
+                  value={quickForm.address}
+                  onChange={(e) => setQuickForm({ ...quickForm, address: e.target.value })}
+                  rows={2}
+                  className="w-full border border-border rounded-md px-4 py-2.5 bg-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary transition-colors resize-none"
+                  placeholder="আপনার সম্পূর্ণ ঠিকানা"
+                  required
+                />
+              </div>
+
+              {/* Shipping Zone */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-foreground">ডেলিভারি এলাকা</label>
+                {([
+                  { value: "inside_dhaka" as const, label: "ঢাকার ভিতরে", cost: 60 },
+                  { value: "outside_dhaka" as const, label: "ঢাকার বাইরে", cost: 120 },
+                ]).map((zone) => (
+                  <label
+                    key={zone.value}
+                    className={`flex items-center justify-between cursor-pointer rounded-md border px-3 py-2.5 transition-colors ${
+                      shippingZone === zone.value ? "border-primary bg-primary/5" : "border-border"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="quickShipping"
+                        checked={shippingZone === zone.value}
+                        onChange={() => setShippingZone(zone.value)}
+                        className="accent-primary"
+                      />
+                      <span className="text-sm text-foreground">{zone.label}</span>
+                    </div>
+                    <span className="text-sm font-bold text-price">৳ {zone.cost}</span>
+                  </label>
+                ))}
+              </div>
+
+              {/* Payment Method */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-foreground">পেমেন্ট পদ্ধতি</label>
+                {([
+                  { value: "cod" as const, label: "ক্যাশ অন ডেলিভারি" },
+                  { value: "bkash" as const, label: "বিকাশ (bKash)" },
+                ]).map((method) => (
+                  <label
+                    key={method.value}
+                    className={`flex items-center gap-2 cursor-pointer rounded-md border px-3 py-2.5 transition-colors ${
+                      paymentMethod === method.value ? "border-primary bg-primary/5" : "border-border"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="quickPayment"
+                      checked={paymentMethod === method.value}
+                      onChange={() => setPaymentMethod(method.value)}
+                      className="accent-primary"
+                    />
+                    <span className="text-sm text-foreground">{method.label}</span>
+                  </label>
+                ))}
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">নোট (ঐচ্ছিক)</label>
+                <input
+                  value={quickForm.notes}
+                  onChange={(e) => setQuickForm({ ...quickForm, notes: e.target.value })}
+                  className="w-full border border-border rounded-md px-4 py-2.5 bg-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
+                  placeholder="বিশেষ কোনো নির্দেশনা..."
+                />
+              </div>
+
+              {/* Total */}
+              <div className="border-t border-border pt-4 flex justify-between text-lg font-bold text-foreground">
+                <span>সর্বমোট</span>
+                <span className="text-price">৳ {orderTotal.toLocaleString()}</span>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-primary text-primary-foreground font-semibold py-3.5 rounded-md hover:opacity-90 transition-opacity"
+              >
+                অর্ডার কনফার্ম করুন
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
       <Footer />
       <MobileBottomNav />
     </div>

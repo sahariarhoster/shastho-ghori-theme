@@ -25,10 +25,7 @@ const CheckoutPage = () => {
   const [form, setForm] = useState({
     name: "",
     phone: "",
-    email: "",
     address: "",
-    city: "",
-    district: "",
     notes: "",
   });
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "bkash">("cod");
@@ -120,17 +117,6 @@ const CheckoutPage = () => {
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-foreground mb-1">ইমেইল (ঐচ্ছিক)</label>
-                    <input
-                      name="email"
-                      value={form.email}
-                      onChange={handleChange}
-                      type="email"
-                      className="w-full border border-border rounded-md px-4 py-2.5 bg-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
-                      placeholder="email@example.com"
-                    />
-                  </div>
-                  <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-foreground mb-1">ঠিকানা *</label>
                     <textarea
                       name="address"
@@ -140,26 +126,6 @@ const CheckoutPage = () => {
                       className="w-full border border-border rounded-md px-4 py-2.5 bg-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary transition-colors resize-none"
                       placeholder="আপনার সম্পূর্ণ ঠিকানা"
                       required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">জেলা</label>
-                    <input
-                      name="district"
-                      value={form.district}
-                      onChange={handleChange}
-                      className="w-full border border-border rounded-md px-4 py-2.5 bg-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
-                      placeholder="জেলা"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">শহর</label>
-                    <input
-                      name="city"
-                      value={form.city}
-                      onChange={handleChange}
-                      className="w-full border border-border rounded-md px-4 py-2.5 bg-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
-                      placeholder="শহর"
                     />
                   </div>
                 </div>
