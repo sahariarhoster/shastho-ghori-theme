@@ -10,7 +10,7 @@ const ProductCard = ({ product }: { product: Product }) => {
   const { toast } = useToast();
 
   return (
-    <div className="group bg-card rounded-xl border border-border overflow-hidden hover-lift">
+    <div className="group bg-card rounded-xl border border-border overflow-hidden hover-lift flex flex-col h-full">
       {/* Image */}
       <Link to={`/product/${product.id}`} className="block relative overflow-hidden">
         {hasDiscount && (
@@ -46,7 +46,7 @@ const ProductCard = ({ product }: { product: Product }) => {
       </Link>
 
       {/* Info */}
-      <div className="p-4">
+      <div className="p-4 flex flex-col flex-1">
         <p className="text-[10px] text-accent font-semibold uppercase tracking-wider mb-1">{product.category}</p>
         <Link to={`/product/${product.id}`}>
           <h3 className="text-sm font-semibold text-card-foreground mb-0.5 line-clamp-1 hover:text-primary transition-colors">
@@ -68,7 +68,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           </div>
         )}
 
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center gap-2 mb-3 mt-auto pt-2">
           {hasDiscount && product.originalPrice && (
             <span className="text-xs text-price-old line-through">
               ৳ {product.originalPrice.toLocaleString()}
